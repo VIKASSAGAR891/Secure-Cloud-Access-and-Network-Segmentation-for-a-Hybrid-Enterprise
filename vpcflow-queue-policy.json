@@ -1,0 +1,3 @@
+{
+  "Policy": "{\r\n  \"Version\": \"2012-10-17\",\r\n  \"Statement\": [\r\n    {\r\n      \"Sid\": \"AllowS3ToSendMessages\",\r\n      \"Effect\": \"Allow\",\r\n      \"Principal\": { \"Service\": \"s3.amazonaws.com\" },\r\n      \"Action\": \"sqs:SendMessage\",\r\n      \"Resource\": \"arn:aws:sqs:ap-southeast-2:889033546057:thinkix-vpcflow-sentinel-queue\",\r\n      \"Condition\": {\r\n        \"ArnEquals\": { \"aws:SourceArn\": \"arn:aws:s3:::thinkix-cloudtrail-logs-889033546057\" },\r\n        \"StringEquals\": { \"aws:SourceAccount\": \"889033546057\" }\r\n      }\r\n    }\r\n  ]\r\n}"
+}

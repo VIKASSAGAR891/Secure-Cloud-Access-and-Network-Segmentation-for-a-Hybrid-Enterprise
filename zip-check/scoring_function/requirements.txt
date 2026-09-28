@@ -1,0 +1,10 @@
+azure-functions
+azure-identity
+azure-monitor-query
+azure-storage-blob
+pandas
+numpy
+scikit-learn
+tensorflow-cpu
+joblib
+requests

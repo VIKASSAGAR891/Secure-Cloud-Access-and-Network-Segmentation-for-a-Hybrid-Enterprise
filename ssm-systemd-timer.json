@@ -1,0 +1,13 @@
+{
+  "commands": [
+    "sudo tee /usr/local/bin/eastwest-traffic-gen.sh > /dev/null << 'SCRIPTEOF'\n#!/bin/bash\ncurl -s -o /dev/null -w \"%{http_code}\\n\" http://10.10.3.246:8080/health >> /var/log/eastwest-traffic-gen.log 2>&1\nSCRIPTEOF",
+    "sudo chmod +x /usr/local/bin/eastwest-traffic-gen.sh",
+    "sudo tee /etc/systemd/system/eastwest-traffic-gen.service > /dev/null << 'UNITEOF'\n[Unit]\nDescription=East-West traffic generator\n\n[Service]\nType=oneshot\nExecStart=/usr/local/bin/eastwest-traffic-gen.sh\nUNITEOF",
+    "sudo tee /etc/systemd/system/eastwest-traffic-gen.timer > /dev/null << 'TIMEREOF'\n[Unit]\nDescription=Run East-West traffic generator every minute\n\n[Timer]\nOnBootSec=30\nOnUnitActiveSec=60\n\n[Install]\nWantedBy=timers.target\nTIMEREOF",
+    "sudo systemctl daemon-reload",
+    "sudo systemctl enable --now eastwest-traffic-gen.timer",
+    "sleep 65",
+    "cat /var/log/eastwest-traffic-gen.log",
+    "sudo systemctl list-timers eastwest-traffic-gen.timer --no-pager"
+  ]
+}

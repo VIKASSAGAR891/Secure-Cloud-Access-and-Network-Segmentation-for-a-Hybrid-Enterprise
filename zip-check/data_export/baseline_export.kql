@@ -1,0 +1,25 @@
+// ============================================================================
+// Baseline export query for East-West traffic anomaly detection
+// Run this in Sentinel > Logs, then use "Export" > "Export to CSV" or
+// pull it programmatically via the Log Analytics Query API (see export_logs.py)
+// ============================================================================
+
+AWSVPCFlow
+| where TimeGenerated between (startofday(ago(14d)) .. now())
+// East-West only: both src and dst are inside the VPC CIDR (10.10.0.0/16)
+| where SrcAddr startswith "10.10." and DstAddr startswith "10.10."
+| project
+    TimeGenerated,
+    InterfaceId,
+    SrcAddr,
+    DstAddr,
+    SrcPort,
+    DstPort,
+    Protocol,
+    Packets,
+    Bytes,
+    StartTime = TimeGenerated,
+    EndTime = column_ifexists("EndTime", TimeGenerated),
+    Action = column_ifexists("Action", ""),
+    FlowDirection = column_ifexists("FlowDirection", "")
+| sort by TimeGenerated asc

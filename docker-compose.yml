@@ -1,0 +1,49 @@
+# docker-compose.yml
+version: '3.7'
+
+services:
+  wazuh.manager:
+    image: wazuh/wazuh-manager:4.9.0
+    hostname: wazuh.manager
+    restart: always
+    ports:
+      - "1514:1514"
+      - "1515:1515"
+      - "514:514/udp"
+      - "55000:55000"
+    environment:
+      - INDEXER_URL=https://wazuh.indexer:9200
+      - INDEXER_USERNAME=admin
+      - INDEXER_PASSWORD=SecretPassword123!
+      - FILEBEAT_SSL_VERIFICATION_MODE=none
+    volumes:
+      - wazuh_manager_data:/var/ossec/data
+
+  wazuh.indexer:
+    image: wazuh/wazuh-indexer:4.9.0
+    hostname: wazuh.indexer
+    restart: always
+    ports:
+      - "9200:9200"
+    environment:
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+    volumes:
+      - wazuh_indexer_data:/var/lib/wazuh-indexer
+
+  wazuh.dashboard:
+    image: wazuh/wazuh-dashboard:4.9.0
+    hostname: wazuh.dashboard
+    restart: always
+    ports:
+      - "443:5601"
+    environment:
+      - INDEXER_USERNAME=admin
+      - INDEXER_PASSWORD=SecretPassword123!
+      - WAZUH_API_URL=https://wazuh.manager
+    depends_on:
+      - wazuh.indexer
+      - wazuh.manager
+
+volumes:
+  wazuh_manager_data:
+  wazuh_indexer_data:

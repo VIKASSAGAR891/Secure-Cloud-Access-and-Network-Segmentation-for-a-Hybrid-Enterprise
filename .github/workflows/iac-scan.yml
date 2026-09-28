@@ -1,0 +1,87 @@
+name: IaC Security Scan
+
+# Matches the report's design (Section 3.1.5, Harsha's SDN/IaC automation):
+# "An IaC pipeline creates new cloud resources, and the SDN controller
+#  automatically analyses the configuration using two open-source tools
+#  (both Checkov and Terrascan are run in parallel)... and implements the
+#  relevant segmentation policy before the cloud resource is made reachable."
+#
+# This workflow is the CI-side half of that design: it runs both scanners
+# in parallel on every PR that touches Terraform, and blocks the merge if
+# either tool finds a CRITICAL or HIGH severity misconfiguration. It does
+# not (yet) do the second half -- the SDN controller automatically pushing
+# segmentation policy -- that's a separate, larger piece; this workflow is
+# the "does this change pass a security gate before merge" enforcement
+# point, which is the part that's realistically achievable as a first step.
+
+on:
+  pull_request:
+    paths:
+      - "**/*.tf"
+      - "**/*.tf.json"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.tf"
+      - "**/*.tf.json"
+  workflow_dispatch: {}  # allows a manual run from the Actions tab, useful for demoing
+
+jobs:
+  checkov:
+    name: Checkov scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          framework: terraform
+          output_format: cli,sarif
+          output_file_path: console,checkov-results.sarif
+          # fail the whole job on CRITICAL/HIGH; lower severities are
+          # reported but don't block the merge, matching the report's
+          # "blocks deployment on critical findings" language, not "any
+          # finding at all" -- an all-or-nothing gate would be too noisy
+          # to be usable in practice.
+          soft_fail: false
+          skip_check: ""  # add specific check IDs here later if a rule proves to be a false positive for this VPC's design
+
+      - name: Upload Checkov SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: checkov-results.sarif
+          category: checkov
+
+  terrascan:
+    name: Terrascan scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Terrascan
+        id: terrascan
+        uses: tenable/terrascan-action@main
+        with:
+          iac_type: terraform
+          iac_version: v14
+          policy_type: aws,azure
+          only_warn: false  # fail the job on findings at or above the default (high) severity
+          sarif_upload: true
+
+      - name: Upload Terrascan SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: terrascan.sarif
+          category: terrascan
+
+  # A required status check can be configured in GitHub's branch protection
+  # settings to require both "checkov" and "terrascan" jobs to pass before
+  # a PR touching Terraform can be merged -- see README.md in this folder
+  # for the exact setting to enable.

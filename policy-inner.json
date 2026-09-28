@@ -1,0 +1,16 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowS3ToSendMessages",
+      "Effect": "Allow",
+      "Principal": { "Service": "s3.amazonaws.com" },
+      "Action": "sqs:SendMessage",
+      "Resource": "arn:aws:sqs:ap-southeast-2:889033546057:thinkix-cloudtrail-sentinel-queue",
+      "Condition": {
+        "ArnEquals": { "aws:SourceArn": "arn:aws:s3:::thinkix-cloudtrail-logs-889033546057" },
+        "StringEquals": { "aws:SourceAccount": "889033546057" }
+      }
+    }
+  ]
+}

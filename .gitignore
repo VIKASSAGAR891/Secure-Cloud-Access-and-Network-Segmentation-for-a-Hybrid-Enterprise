@@ -1,0 +1,41 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+*.tfplan
+*.plan
+crash.log
+crash.*.log
+
+# Credentials and local configuration
+*.pem
+*.key
+*.p12
+*.pfx
+.env
+.env.*
+!.env.example
+local.settings.json
+**/local.settings.json
+ssm-params.json
+ssm-generator-params.json
+ssm-output.txt
+
+# Local Azure Storage emulator data
+AzuriteConfig
+__azurite_db_*.json
+__blobstorage__/
+__queuestorage__/
+
+# Python environments and generated files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db

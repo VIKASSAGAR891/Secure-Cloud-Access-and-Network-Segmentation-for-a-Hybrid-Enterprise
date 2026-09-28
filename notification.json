@@ -1,0 +1,23 @@
+{
+  "QueueConfigurations": [
+    {
+      "QueueArn": "arn:aws:sqs:ap-southeast-2:889033546057:thinkix-cloudtrail-sentinel-queue",
+      "Events": ["s3:ObjectCreated:*"],
+      "Filter": {
+        "Key": { "FilterRules": [ { "Name": "suffix", "Value": ".json.gz" } ] }
+      }
+    },
+    {
+      "QueueArn": "arn:aws:sqs:ap-southeast-2:889033546057:thinkix-vpcflow-sentinel-queue",
+      "Events": ["s3:ObjectCreated:*"],
+      "Filter": {
+        "Key": {
+          "FilterRules": [
+            { "Name": "prefix", "Value": "VPCFlowLogs/" },
+            { "Name": "suffix", "Value": ".log.gz" }
+          ]
+        }
+      }
+    }
+  ]
+}

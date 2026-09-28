@@ -1,0 +1,16 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowNaclBlockExecutorActions",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeSubnets",
+        "ec2:DescribeNetworkAcls",
+        "ec2:CreateNetworkAclEntry",
+        "ec2:DeleteNetworkAclEntry"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

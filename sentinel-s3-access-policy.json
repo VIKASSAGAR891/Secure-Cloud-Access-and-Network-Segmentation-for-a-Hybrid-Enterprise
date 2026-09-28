@@ -1,0 +1,32 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowSQSReadForSentinel",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ChangeMessageVisibility"
+      ],
+      "Resource": [
+        "arn:aws:sqs:ap-southeast-2:889033546057:thinkix-cloudtrail-sentinel-queue",
+        "arn:aws:sqs:ap-southeast-2:889033546057:thinkix-vpcflow-sentinel-queue"
+      ]
+    },
+    {
+      "Sid": "AllowS3ReadForSentinel",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::thinkix-cloudtrail-logs-889033546057",
+        "arn:aws:s3:::thinkix-cloudtrail-logs-889033546057/*"
+      ]
+    }
+  ]
+}

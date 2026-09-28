@@ -1,0 +1,18 @@
+{
+  "feature_cols": [
+    "log_flow_count",
+    "unique_dst_hosts",
+    "unique_dst_ports",
+    "log_total_bytes",
+    "log_total_packets",
+    "log_mean_bytes_per_flow",
+    "log_max_bytes_single_flow",
+    "pct_well_known_ports",
+    "protocol_nunique",
+    "dst_fanout_ratio",
+    "port_fanout_ratio"
+  ],
+  "ae_error_p99": 0.3111969828605652,
+  "trained_on_samples": 1084,
+  "trained_on_hosts": 4
+}
